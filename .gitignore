@@ -1,0 +1,7 @@
+qa/
+*.log
+preview.out.log
+preview.err.log
+server.out.log
+server.err.log
+munyachipunza/

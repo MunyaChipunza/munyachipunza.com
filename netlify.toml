@@ -1,0 +1,177 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/about.html"
+  to = "/about"
+  status = 301
+
+[[redirects]]
+  from = "/thanks"
+  to = "/thanks.html"
+  status = 200
+
+[[redirects]]
+  from = "/thanks.html"
+  to = "/thanks"
+  status = 301
+
+[[redirects]]
+  from = "/writing"
+  to = "/writing/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/"
+  to = "/writing"
+  status = 301
+
+[[redirects]]
+  from = "/writing/index.html"
+  to = "/writing"
+  status = 301
+
+[[redirects]]
+  from = "/writing/weight-of-unspoken-words"
+  to = "/writing/weight-of-unspoken-words.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/weight-of-unspoken-words.html"
+  to = "/writing/weight-of-unspoken-words"
+  status = 301
+
+[[redirects]]
+  from = "/writing/self-worth"
+  to = "/writing/self-worth.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/self-worth.html"
+  to = "/writing/self-worth"
+  status = 301
+
+[[redirects]]
+  from = "/writing/peace-can-be-safe"
+  to = "/writing/peace-can-be-safe.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/peace-can-be-safe.html"
+  to = "/writing/peace-can-be-safe"
+  status = 301
+
+[[redirects]]
+  from = "/writing/not-ok"
+  to = "/writing/not-ok.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/not-ok.html"
+  to = "/writing/not-ok"
+  status = 301
+
+[[redirects]]
+  from = "/writing/when-all-goes-wrong"
+  to = "/writing/when-all-goes-wrong.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/when-all-goes-wrong.html"
+  to = "/writing/when-all-goes-wrong"
+  status = 301
+
+[[redirects]]
+  from = "/writing/enemy-inner-me"
+  to = "/writing/enemy-inner-me.html"
+  status = 200
+
+[[redirects]]
+  from = "/writing/enemy-inner-me.html"
+  to = "/writing/enemy-inner-me"
+  status = 301
+
+[[redirects]]
+  from = "/blog"
+  to = "/writing"
+  status = 301
+
+[[redirects]]
+  from = "/blog/"
+  to = "/writing/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/weight-of-unspoken-words"
+  to = "/writing/weight-of-unspoken-words"
+  status = 301
+
+[[redirects]]
+  from = "/blog/weight-of-unspoken-words.html"
+  to = "/writing/weight-of-unspoken-words"
+  status = 301
+
+[[redirects]]
+  from = "/blog/self-worth"
+  to = "/writing/self-worth"
+  status = 301
+
+[[redirects]]
+  from = "/blog/self-worth.html"
+  to = "/writing/self-worth"
+  status = 301
+
+[[redirects]]
+  from = "/blog/peace-can-be-safe"
+  to = "/writing/peace-can-be-safe"
+  status = 301
+
+[[redirects]]
+  from = "/blog/peace-can-be-safe.html"
+  to = "/writing/peace-can-be-safe"
+  status = 301
+
+[[redirects]]
+  from = "/blog/not-ok"
+  to = "/writing/not-ok"
+  status = 301
+
+[[redirects]]
+  from = "/blog/not-ok.html"
+  to = "/writing/not-ok"
+  status = 301
+
+[[redirects]]
+  from = "/blog/when-all-goes-wrong"
+  to = "/writing/when-all-goes-wrong"
+  status = 301
+
+[[redirects]]
+  from = "/blog/when-all-goes-wrong.html"
+  to = "/writing/when-all-goes-wrong"
+  status = 301
+
+[[redirects]]
+  from = "/blog/enemy-inner-me"
+  to = "/writing/enemy-inner-me"
+  status = 301
+
+[[redirects]]
+  from = "/blog/enemy-inner-me.html"
+  to = "/writing/enemy-inner-me"
+  status = 301
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
