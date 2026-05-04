@@ -48,6 +48,50 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
   });
 });
 
+document.querySelectorAll('form[name="newsletter"]').forEach((form) => {
+  const emailInput = form.querySelector('input[type="email"]');
+  const button = form.querySelector('button[type="submit"]');
+  const note = form.parentElement?.querySelector(".form-note");
+
+  if (button) {
+    button.textContent = "Open email app";
+  }
+
+  if (note) {
+    note.innerHTML =
+      'This opens your email app and pre-fills a note to <a href="mailto:info@munyachipunza.com">info@munyachipunza.com</a>.';
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (!form.reportValidity()) {
+      return;
+    }
+
+    const email = emailInput?.value.trim() ?? "";
+    const subject = "Next reflection request";
+    const lines = [
+      "Hello Munya,",
+      "",
+      "Please keep me posted when your next reflection is published.",
+      email ? `My email address: ${email}` : "",
+    ].filter(Boolean);
+
+    window.location.href =
+      `mailto:info@munyachipunza.com?subject=${encodeURIComponent(subject)}` +
+      `&body=${encodeURIComponent(lines.join("\n"))}`;
+
+    if (button) {
+      const originalLabel = button.textContent;
+      button.textContent = "Email app opened";
+      window.setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 1600);
+    }
+  });
+});
+
 document.querySelectorAll("[data-year]").forEach((element) => {
   element.textContent = new Date().getFullYear();
 });

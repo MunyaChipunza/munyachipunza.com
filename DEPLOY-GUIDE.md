@@ -1,104 +1,37 @@
 # Munya Chipunza Site Deploy Guide
 
-This site is a plain static website. You do not need Wix hosting for it.
+This site is now set up as a static GitHub Pages website on `munyachipunza.com`.
 
-## What is already prepared
+## What is already done
 
 - The live site files are in the root of this folder.
-- `index.html`, `about.html`, `writing/`, `assets/`, `netlify.toml`, and the SEO files are already set up.
-- Netlify clean URLs are already configured.
-- The old Claude export folder `munyachipunza/` is ignored by `.gitignore` so it does not get pushed by mistake.
+- GitHub repository created: `MunyaChipunza/munyachipunza.com`
+- GitHub Pages repository created: `MunyaChipunza/MunyaChipunza.github.io`
+- Custom domain configured: `munyachipunza.com`
+- Wix DNS updated to point the domain at GitHub Pages
 
-## Before you start
+## What this means
 
-Your domain `munyachipunza.com` currently points to Wix nameservers:
+- You no longer need Wix site hosting for this website.
+- The domain can stay registered at Wix for now.
+- If you want to stop paying Wix completely later, transfer the domain to another registrar after the site has been stable for a while.
 
-- `ns6.wixdns.net`
-- `ns7.wixdns.net`
+## Current hosting setup
 
-That means you can stop paying for Wix site hosting, but you still need to either:
+- Live domain: `https://munyachipunza.com`
+- Preferred domain: apex, not `www`
+- `www.munyachipunza.com` is configured to point back to the apex site
+- GitHub Pages serves the site
 
-1. keep the domain at Wix and update the DNS there, or
-2. transfer the domain to another registrar later.
+## One thing that may still be catching up
 
-The cheapest low-friction path is usually:
+GitHub Pages issues the SSL certificate separately after DNS is correct.
 
-1. deploy the site on Netlify
-2. point the existing Wix-managed domain to Netlify
-3. cancel only the Wix site subscription after the new site is live
-
-## Step 1: Create a GitHub repository
-
-1. Create a free GitHub account if you do not already have one.
-2. Create a new repository.
-3. Upload the contents of this folder to that repository.
-
-Important:
-
-- Upload the root site files, not the parent `100. Zee` folder.
-- If you use Git locally, the `.gitignore` file will keep `qa/`, logs, and the old `munyachipunza/` export out of the repo.
-
-## Step 2: Deploy on Netlify
-
-1. Create a free Netlify account.
-2. Click `Add new site` -> `Import an existing project`.
-3. Connect GitHub.
-4. Select your repository.
-5. Use these settings if Netlify asks:
-   - Build command: leave blank
-   - Publish directory: `.`
-6. Click deploy.
-
-Because this is a static site, the first deploy should be simple.
-
-## Step 3: Test the Netlify preview URL
-
-Before touching the domain, open the Netlify-generated URL and check:
-
-- Home page loads
-- About page loads
-- Writing page loads
-- At least one article opens
-- Navigation works
-- Newsletter form submits to the thank-you page
-
-## Step 4: Connect the custom domain
-
-1. In Netlify, open `Domain management`.
-2. Add `munyachipunza.com`.
-3. Add `www.munyachipunza.com` as well if you want both versions to work.
-4. Netlify will show the exact DNS records it wants.
-
-Because your nameservers are still at Wix, copy the DNS records from Netlify into the Wix DNS manager.
-
-Do not guess these values. Use the exact records Netlify shows for your site.
-
-## Step 5: Wait for DNS to update
-
-After saving the DNS changes in Wix:
-
-1. Wait for propagation.
-2. Recheck the site in Netlify.
-3. Recheck `munyachipunza.com`.
-4. Confirm that the custom domain is marked verified in Netlify.
-
-## Step 6: Cancel Wix hosting only after the new site works
-
-Do not cancel first.
-
-Cancel the Wix site subscription only when:
-
-- the Netlify site is live
-- the custom domain is working
-- you have checked the main pages on desktop and mobile
-
-You may still keep the domain registered there for now if that is the easiest option.
+DNS is already correct and GitHub is already serving the site on HTTP. If HTTPS is not active yet, that is a propagation delay on GitHub's side, not a site-code problem.
 
 ## Updating the site later
 
-### Edit copy or layout
-
-Update these files directly:
+Edit these files directly:
 
 - `index.html`
 - `about.html`
@@ -107,30 +40,33 @@ Update these files directly:
 - `assets/css/style.css`
 - `assets/js/site.js`
 
-### Add a new article
+## Publishing future changes
 
-1. Duplicate one of the files in `writing/`.
-2. Rename it with the new slug.
-3. Update the article title, intro, body, meta, and prev/next links.
-4. Add the article card to `writing/index.html`.
-5. If you want it featured on the homepage, update `index.html`.
-6. Add the new URL to `sitemap.xml`.
-7. Commit and push to GitHub.
-8. Netlify will redeploy automatically.
+1. Edit the files locally in this folder.
+2. Commit the changes to Git.
+3. Push to the GitHub Pages repository.
+4. GitHub Pages republishes the site automatically.
 
-## Folder map
+## Newsletter behavior
 
-- `assets/css/style.css` -> shared site styling
-- `assets/js/site.js` -> navigation, reveal animations, copy-link button
-- `assets/images/` -> local site images
-- `writing/` -> writing index and article pages
-- `netlify.toml` -> clean URL rules and headers
-- `robots.txt`, `sitemap.xml`, `site.webmanifest`, `favicon.svg` -> SEO and browser metadata
+This site is hosted on GitHub Pages, which does not provide built-in form handling.
 
-## If you want the old nested folder removed
+To avoid a fake signup form, the email capture buttons now open the visitor's email app and pre-fill a message to `info@munyachipunza.com`.
 
-There is an older extracted folder named `munyachipunza/` still sitting inside this directory as a backup copy of the first Claude export.
+If you later want true subscriber collection without using Wix, add a separate form service such as Buttondown, ConvertKit, MailerLite, or Formspree.
 
-It is not part of the new build.
+## Files that are still here on purpose
 
-If you want, remove it only after you are satisfied with the new site and have backed up anything you still need from it.
+- `munyachipunza/` is the older Claude export kept as a local backup.
+- `qa/` contains local verification screenshots.
+- `netlify.toml` is a leftover config file from the earlier Netlify direction and is not used by GitHub Pages.
+
+## Safe cleanup later
+
+Once you are satisfied with the live site, you can remove:
+
+- `munyachipunza/`
+- `qa/`
+- old local log files
+
+Do not remove them if you still want the backup or QA evidence.
