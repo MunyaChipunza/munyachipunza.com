@@ -534,6 +534,8 @@ def render_archive_page(page_posts: list[dict], page_number: int, total_pages: i
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/style.css">
   </head>
   <body>
@@ -619,6 +621,8 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/style.css">
   </head>
   <body>
@@ -631,7 +635,7 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
         <h1>{html.escape(post["title"])}</h1>
         <p class="article-intro">{html.escape(intro)}</p>
         <div class="post-meta">
-          <img src="/assets/images/munya-avatar.jpg" alt="Munya Chipunza">
+          <img src="/assets/images/munya-avatar.webp" alt="Munya Chipunza" width="256" height="256" decoding="async">
           <span>Munya Chipunza</span>
           <span>{format_date(post["published_date"])}</span>
           <span>{reading_time_label(post["minutes_to_read"])}</span>
