@@ -48,10 +48,20 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
   });
 });
 
-document.querySelectorAll("[data-contact-form]").forEach((form) => {
+document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach((form) => {
   const button = form.querySelector('button[type="submit"]');
   const note = form.parentElement?.querySelector("[data-form-status]");
   const ajaxAction = form.dataset.ajaxAction || form.getAttribute("action");
+  const isSubscribe = form.hasAttribute("data-subscribe-form");
+  const pendingMessage =
+    form.dataset.pendingMessage || (isSubscribe ? "Saving your subscription..." : "Sending your note...");
+  const successMessage =
+    form.dataset.successMessage || (isSubscribe ? "Thank you. You're on the list." : "Thank you. Your message is on its way.");
+  const errorMessage =
+    form.dataset.errorMessage ||
+    (isSubscribe ? "Subscription did not go through. Please try again in a moment." : "The message did not send. Please try again in a moment.");
+  const successButtonLabel = form.dataset.successButtonLabel || (isSubscribe ? "Subscribed" : "Message sent");
+  const errorButtonLabel = form.dataset.errorButtonLabel || "Try again";
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -68,7 +78,7 @@ document.querySelectorAll("[data-contact-form]").forEach((form) => {
 
     if (note) {
       note.dataset.state = "";
-      note.textContent = "Sending your note...";
+      note.textContent = pendingMessage;
     }
 
     try {
@@ -88,18 +98,18 @@ document.querySelectorAll("[data-contact-form]").forEach((form) => {
       form.reset();
       if (note) {
         note.dataset.state = "success";
-        note.textContent = "Thank you. Your message is on its way.";
+        note.textContent = successMessage;
       }
       if (button) {
-        button.textContent = "Message sent";
+        button.textContent = successButtonLabel;
       }
     } catch (error) {
       if (note) {
         note.dataset.state = "error";
-        note.textContent = "The message did not send. Please try again in a moment.";
+        note.textContent = errorMessage;
       }
       if (button) {
-        button.textContent = "Try again";
+        button.textContent = errorButtonLabel;
       }
     } finally {
       window.setTimeout(() => {

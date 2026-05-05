@@ -393,7 +393,8 @@ textarea {
 .article-nav a,
 .info-panel,
 .form-panel,
-.contact-panel {
+.contact-panel,
+.subscribe-panel {
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(35, 28, 19, 0.08);
@@ -964,7 +965,8 @@ textarea {
 }
 
 .form-panel h2,
-.contact-panel h2 {
+.contact-panel h2,
+.subscribe-panel h2 {
   margin: 0 0 0.75rem;
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(1.9rem, 3vw, 2.6rem);
@@ -972,9 +974,44 @@ textarea {
 }
 
 .form-panel p,
-.contact-panel p {
+.contact-panel p,
+.subscribe-panel p {
   margin: 0 0 1.25rem;
   color: var(--ink-soft);
+}
+
+.subscribe-section {
+  margin: 0 auto 4rem;
+  width: min(calc(100% - 2.4rem), 1080px);
+}
+
+.subscribe-panel {
+  padding: 1.9rem 2rem;
+  display: grid;
+  grid-template-columns: 1.1fr minmax(320px, 0.9fr);
+  gap: 1.5rem 2rem;
+  align-items: end;
+}
+
+.subscribe-copy {
+  max-width: 34rem;
+}
+
+.subscribe-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.subscribe-form-shell {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.subscribe-form {
+  align-items: center;
+}
+
+.subscribe-form button {
+  min-width: 10rem;
 }
 
 .signup-form {
@@ -1193,6 +1230,7 @@ textarea {
   .feature-grid,
   .book-panel,
   .story-layout,
+  .subscribe-panel,
   .footer-grid {
     grid-template-columns: 1fr;
   }
@@ -1306,6 +1344,7 @@ textarea {
   .book-panel-copy,
   .form-panel,
   .contact-panel,
+  .subscribe-panel,
   .footer-shell {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
