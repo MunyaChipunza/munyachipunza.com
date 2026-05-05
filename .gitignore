@@ -1,5 +1,7 @@
 qa/
 *.log
+*.pyc
+__pycache__/
 preview.out.log
 preview.err.log
 server.out.log
