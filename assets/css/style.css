@@ -29,6 +29,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6.5rem;
 }
 
 body {
@@ -681,6 +682,14 @@ textarea {
   font-size: clamp(1.95rem, 3vw, 2.5rem);
   line-height: 1.12;
   font-weight: 400;
+}
+
+.prose-section[id],
+.prose h2[id],
+.page-hero[id],
+.form-section[id],
+[id="contact-form"] {
+  scroll-margin-top: 6.5rem;
 }
 
 .prose h2:first-child {
