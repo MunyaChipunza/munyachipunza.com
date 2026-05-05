@@ -194,6 +194,12 @@ textarea {
   transform: translateY(-1px);
 }
 
+.button:disabled {
+  transform: none;
+  opacity: 0.72;
+  cursor: wait;
+}
+
 .button-primary {
   background: var(--ink);
   color: var(--paper-soft);
@@ -228,6 +234,15 @@ textarea {
   font-size: 0.72rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  font-weight: 700;
+}
+
+.hero-identity {
+  margin: 0 0 1rem;
+  color: var(--rust);
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+  text-transform: none;
   font-weight: 700;
 }
 
@@ -1001,6 +1016,39 @@ textarea {
   font-size: 0.82rem;
 }
 
+.form-note[data-state="success"] {
+  color: var(--olive);
+}
+
+.form-note[data-state="error"] {
+  color: var(--rust);
+}
+
+.contact-list {
+  list-style: none;
+  margin: 0 0 1.4rem;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contact-list li {
+  color: var(--ink);
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.contact-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.72rem;
+  left: 0;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: var(--rust);
+}
+
 .footer {
   padding: 0 0 3rem;
 }
@@ -1035,10 +1083,15 @@ textarea {
   color: rgba(246, 240, 230, 0.72);
 }
 
-.footer-links,
-.footer-social {
+.footer-links {
   display: grid;
   gap: 0.65rem;
+}
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
 .footer-heading {
@@ -1056,9 +1109,33 @@ textarea {
   text-decoration: none;
 }
 
+.social-link {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 240, 230, 0.16);
+  background: rgba(246, 240, 230, 0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.social-link svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
 .footer-links a:hover,
 .footer-social a:hover {
   color: #ffffff;
+}
+
+.social-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(246, 240, 230, 0.38);
+  background: rgba(246, 240, 230, 0.1);
 }
 
 .footer-bottom {

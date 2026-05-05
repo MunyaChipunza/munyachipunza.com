@@ -48,46 +48,66 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
   });
 });
 
-document.querySelectorAll('form[name="newsletter"]').forEach((form) => {
-  const emailInput = form.querySelector('input[type="email"]');
+document.querySelectorAll("[data-contact-form]").forEach((form) => {
   const button = form.querySelector('button[type="submit"]');
-  const note = form.parentElement?.querySelector(".form-note");
+  const note = form.parentElement?.querySelector("[data-form-status]");
+  const ajaxAction = form.dataset.ajaxAction || form.getAttribute("action");
 
-  if (button) {
-    button.textContent = "Open email app";
-  }
-
-  if (note) {
-    note.innerHTML =
-      'This opens your email app and pre-fills a note to <a href="mailto:info@munyachipunza.com">info@munyachipunza.com</a>.';
-  }
-
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (!form.reportValidity()) {
+    if (!form.reportValidity() || !ajaxAction) {
       return;
     }
 
-    const email = emailInput?.value.trim() ?? "";
-    const subject = "Next reflection request";
-    const lines = [
-      "Hello Munya,",
-      "",
-      "Please keep me posted when your next reflection is published.",
-      email ? `My email address: ${email}` : "",
-    ].filter(Boolean);
-
-    window.location.href =
-      `mailto:info@munyachipunza.com?subject=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(lines.join("\n"))}`;
-
+    const originalLabel = button?.textContent ?? "";
     if (button) {
-      const originalLabel = button.textContent;
-      button.textContent = "Email app opened";
+      button.disabled = true;
+      button.textContent = "Sending...";
+    }
+
+    if (note) {
+      note.dataset.state = "";
+      note.textContent = "Sending your note...";
+    }
+
+    try {
+      const response = await fetch(ajaxAction, {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !["true", true].includes(payload.success)) {
+        throw new Error("Submission failed");
+      }
+
+      form.reset();
+      if (note) {
+        note.dataset.state = "success";
+        note.textContent = "Thank you. Your message is on its way.";
+      }
+      if (button) {
+        button.textContent = "Message sent";
+      }
+    } catch (error) {
+      if (note) {
+        note.dataset.state = "error";
+        note.textContent = "The message did not send. Please try again in a moment.";
+      }
+      if (button) {
+        button.textContent = "Try again";
+      }
+    } finally {
       window.setTimeout(() => {
-        button.textContent = originalLabel;
-      }, 1600);
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
+      }, 1800);
     }
   });
 });
