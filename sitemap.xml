@@ -2,42 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://munyachipunza.com/</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/about</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/page/2</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/page/3</loc>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/weight-of-unspoken-words</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/self-worth</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/peace-can-be-safe</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/not-ok</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/when-all-goes-wrong</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://munyachipunza.com/writing/enemy-inner-me</loc>
-    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://munyachipunza.com/thanks</loc>
-    <lastmod>2026-05-04</lastmod>
+    <loc>https://munyachipunza.com/writing/the-power-of-thank-you</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/words-that-build-not-break</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/shifting-the-lens-of-leadership-and-life</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/when-the-leader-runs-empty</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/pressure-reveals-the-leader</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://munyachipunza.com/writing/dare-to-lead</loc>
+    <changefreq>monthly</changefreq>
   </url>
 </urlset>
