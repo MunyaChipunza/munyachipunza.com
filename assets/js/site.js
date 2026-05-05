@@ -35,15 +35,33 @@ document.querySelectorAll(".will-reveal").forEach((element) => {
 
 document.querySelectorAll("[data-copy-link]").forEach((button) => {
   button.addEventListener("click", async () => {
+    const label = button.querySelector("[data-copy-text]");
+    const originalLabel = label?.textContent || button.getAttribute("aria-label") || button.textContent;
+    const setStatus = (message, state) => {
+      if (label) {
+        label.textContent = message;
+      } else {
+        button.textContent = message;
+      }
+      button.setAttribute("aria-label", message);
+      button.setAttribute("title", message);
+      button.classList.remove("is-copied", "is-error");
+      if (state) {
+        button.classList.add(state);
+      }
+    };
+
     try {
       await navigator.clipboard.writeText(button.dataset.copyLink);
-      const original = button.textContent;
-      button.textContent = "Link copied";
+      setStatus("Link copied", "is-copied");
       window.setTimeout(() => {
-        button.textContent = original;
+        setStatus(originalLabel, "");
       }, 1600);
     } catch (error) {
-      button.textContent = "Copy failed";
+      setStatus("Copy failed", "is-error");
+      window.setTimeout(() => {
+        setStatus(originalLabel, "");
+      }, 1600);
     }
   });
 });
