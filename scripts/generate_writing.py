@@ -72,6 +72,38 @@ POST_CONFIG = {
     },
 }
 
+LOCAL_POSTS = [
+    {
+        "old_slug": "blank-page-was-still-there",
+        "route": "blank-page-was-still-there",
+        "tag": "Resilience",
+        "title": "The Blank Page Was Still There",
+        "summary": "A quiet return after a season of silence, and a reminder that some pauses are survival, not failure.",
+        "excerpt": "A quiet return after a season of silence, and a reminder that some pauses are survival, not failure. The blank page does not hold your absence against you. It just opens.",
+        "published_date": "2026-05-05T12:00:00Z",
+        "updated_date": "2026-05-05T12:00:00Z",
+        "minutes_to_read": 2,
+        "paragraphs": [
+            "I didn't plan to disappear.",
+            "That's the thing about going quiet — it rarely starts with a decision. It starts with one week being harder than usual. Then that week becomes two. And somewhere in the middle of it, writing stops feeling like something you do and starts feeling like something you owe people. A debt you're not ready to pay.",
+            "So you stay silent. And the longer the silence, the heavier the return feels.",
+            "I've been away from this page for a while. Not because I ran out of things to say — if anything, the opposite. Life handed me more than I knew how to write about. Some seasons are like that. They're too full, too raw, too close to the bone to turn into words while you're still inside them.",
+            "But here's what I came back to find: the blank page was still there. Waiting. Not accusing. Just waiting.",
+            "There's a version of this story I used to believe — that if you stop, you forfeit something. That consistency is the price of being taken seriously. That the gap in your timeline is proof of something. Weakness, maybe. Or lack of discipline.",
+            "I don't believe that anymore.",
+            "I think some pauses are not failures. They're survival. They're you doing what needed to be done — holding things together, showing up where it mattered most, getting through the part of life that doesn't pause just because you need it to.",
+            "The writing will still be here when you come back.",
+            "I don't know who needs to hear this today. Maybe you stopped writing. Or praying. Or going to the gym. Or calling the people who matter. Maybe you put something down weeks ago — something that used to give you life — because the weight of everything else was too much.",
+            "I want to tell you: the return doesn't have to be an event. You don't need to announce it. You don't need to explain the gap. You don't need to come back louder or more polished to make up for the time away.",
+            "You just need to start again. Quietly, if that's all you have.",
+            "One sentence. One prayer. One kilometre. One message.",
+            "The blank page doesn't hold the absence against you. It just opens.",
+            "I'm back. And whatever you put down — whenever you're ready — so are you.",
+        ],
+        "image_url": f"{SITE_URL}/assets/images/munya-home.jpg",
+    }
+]
+
 
 def run_curl(url: str, *, headers: dict[str, str] | None = None, method: str = "GET", data: str | None = None, resolve_old: bool = False) -> str:
     handle, output_path = tempfile.mkstemp(prefix="munya-wix-", suffix=".json")
@@ -215,6 +247,9 @@ def render_inline_node(node: dict) -> str:
 
 
 def paragraph_text(post: dict) -> list[str]:
+    if post.get("paragraphs"):
+        return [html.escape(normalize_text(paragraph)) for paragraph in post["paragraphs"] if paragraph.strip()]
+
     paragraphs: list[str] = []
     for node in post["rich_content"]:
         if node.get("type") != "PARAGRAPH":
@@ -263,6 +298,10 @@ def first_paragraph_plain(post: dict) -> str:
     return clean_excerpt(plain)
 
 
+def summary_source(post: dict) -> str:
+    return clean_excerpt(post.get("summary") or first_paragraph_plain(post) or post["excerpt"])
+
+
 def render_article_body(post: dict) -> str:
     paragraphs = paragraph_text(post)
     blocks = []
@@ -273,11 +312,11 @@ def render_article_body(post: dict) -> str:
 
 
 def article_description(post: dict) -> str:
-    return text_snippet(first_paragraph_plain(post) or post["excerpt"], 158)
+    return text_snippet(summary_source(post), 158)
 
 
 def article_intro(post: dict) -> str:
-    return text_snippet(first_paragraph_plain(post) or post["excerpt"], 210)
+    return text_snippet(summary_source(post), 210)
 
 
 def page_route(page_number: int) -> str:
@@ -678,16 +717,48 @@ def render_sitemap(posts: list[dict], total_pages: int) -> str:
 """
 
 
-def update_homepage_feature_dates(posts: list[dict]) -> None:
+def render_homepage_feature_grid(posts: list[dict]) -> str:
+    lead_post = posts[0]
+    side_posts = posts[1:3]
+    main_excerpt = text_snippet(lead_post.get("summary") or lead_post["excerpt"] or first_paragraph_plain(lead_post), 165)
+
+    side_cards = []
+    for post in side_posts:
+        side_cards.append(
+            f"""            <a class="mini-card will-reveal" href="/writing/{post["route"]}">
+              <span class="mini-tag">{html.escape(post["tag"])}</span>
+              <h3 class="mini-title">{html.escape(post["title"])}</h3>
+              <p>{html.escape(text_snippet(post.get("summary") or post["excerpt"] or first_paragraph_plain(post), 110))}</p>
+              <div class="feature-meta">{format_date(post["published_date"])} &bull; {reading_time_label(post["minutes_to_read"])}</div>
+            </a>"""
+        )
+
+    return f"""        <div class="feature-grid">
+          <a class="feature-card will-reveal" href="/writing/{lead_post["route"]}">
+            <span class="feature-tag">{html.escape(lead_post["tag"])}</span>
+            <h3 class="feature-title">{html.escape(lead_post["title"])}</h3>
+            <p class="feature-excerpt">
+              {html.escape(main_excerpt)}
+            </p>
+            <div class="feature-meta">{format_date(lead_post["published_date"])} &bull; {reading_time_label(lead_post["minutes_to_read"])}</div>
+          </a>
+
+          <div class="feature-side">
+{chr(10).join(side_cards)}
+          </div>
+        </div>"""
+
+
+def update_homepage_featured_posts(posts: list[dict]) -> None:
     home_path = ROOT / "index.html"
     home = home_path.read_text(encoding="utf-8")
-    replacements = {
-        "February 2026 &bull; 3 min read": f"{format_date(posts[0]['published_date'])} &bull; {reading_time_label(posts[0]['minutes_to_read'])}",
-        "November 2025 &bull; 3 min read": f"{format_date(posts[1]['published_date'])} &bull; {reading_time_label(posts[1]['minutes_to_read'])}",
-        "October 2025 &bull; 3 min read": f"{format_date(posts[2]['published_date'])} &bull; {reading_time_label(posts[2]['minutes_to_read'])}",
-    }
-    for old, new in replacements.items():
-        home = home.replace(old, new)
+    home = re.sub(
+        r'        <div class="feature-grid">.*?        </div>\r?\n      </section>',
+        f"{render_homepage_feature_grid(posts)}\n      </section>",
+        home,
+        count=1,
+        flags=re.S,
+    )
     home_path.write_text(home, encoding="utf-8")
 
 
@@ -698,7 +769,8 @@ def write(path: Path, content: str) -> None:
 
 def main() -> None:
     access_token = fetch_access_token()
-    posts = fetch_posts(access_token)
+    posts = fetch_posts(access_token) + [dict(post) for post in LOCAL_POSTS]
+    posts.sort(key=lambda post: post["published_date"], reverse=True)
     total_pages = (len(posts) + POSTS_PER_PAGE - 1) // POSTS_PER_PAGE
 
     for page_number in range(1, total_pages + 1):
@@ -718,11 +790,12 @@ def main() -> None:
         write(ROOT / "writing" / f"{post['route']}.html", article_html)
         write(ROOT / "writing" / post["route"] / "index.html", article_html)
         write(ROOT / "blog" / post["route"] / "index.html", render_redirect_page(f"/writing/{post['route']}"))
-        write(ROOT / "post" / post["old_slug"] / "index.html", render_redirect_page(f"/writing/{post['route']}"))
+        if post.get("old_slug"):
+            write(ROOT / "post" / post["old_slug"] / "index.html", render_redirect_page(f"/writing/{post['route']}"))
 
     write(ROOT / "blog-feed.xml", render_feed(posts))
     write(ROOT / "sitemap.xml", render_sitemap(posts, total_pages))
-    update_homepage_feature_dates(posts)
+    update_homepage_featured_posts(posts)
 
 
 if __name__ == "__main__":
