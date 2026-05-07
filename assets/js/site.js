@@ -67,23 +67,79 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
 });
 
 document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach((form) => {
-  if (!form.dataset.ajaxAction) {
-    return;
-  }
-
   const button = form.querySelector('button[type="submit"]');
   const note = form.parentElement?.querySelector("[data-form-status]");
-  const ajaxAction = form.dataset.ajaxAction;
   const isSubscribe = form.hasAttribute("data-subscribe-form");
+  const isButtondownSubscribe = isSubscribe && form.action.includes("buttondown.com/api/emails/embed-subscribe/");
+  const ajaxAction = form.dataset.ajaxAction;
   const pendingMessage =
     form.dataset.pendingMessage || (isSubscribe ? "Saving your subscription..." : "Sending your note...");
   const successMessage =
-    form.dataset.successMessage || (isSubscribe ? "Thank you. You're on the list." : "Thank you. Your message is on its way.");
+    form.dataset.successMessage ||
+    (isSubscribe ? "Thank you. Please check your inbox to confirm your subscription." : "Thank you. Your message is on its way.");
   const errorMessage =
     form.dataset.errorMessage ||
     (isSubscribe ? "Subscription did not go through. Please try again in a moment." : "The message did not send. Please try again in a moment.");
-  const successButtonLabel = form.dataset.successButtonLabel || (isSubscribe ? "Subscribed" : "Message sent");
+  const successButtonLabel = form.dataset.successButtonLabel || (isSubscribe ? "Check your inbox" : "Message sent");
   const errorButtonLabel = form.dataset.errorButtonLabel || "Try again";
+
+  if (isButtondownSubscribe) {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      const originalLabel = button?.textContent ?? "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Sending...";
+      }
+
+      if (note) {
+        note.dataset.state = "";
+        note.textContent = pendingMessage;
+      }
+
+      try {
+        await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          mode: "no-cors",
+        });
+
+        form.reset();
+        if (note) {
+          note.dataset.state = "success";
+          note.textContent = successMessage;
+        }
+        if (button) {
+          button.textContent = successButtonLabel;
+        }
+      } catch (error) {
+        if (note) {
+          note.dataset.state = "error";
+          note.textContent = errorMessage;
+        }
+        if (button) {
+          button.textContent = errorButtonLabel;
+        }
+      } finally {
+        window.setTimeout(() => {
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalLabel;
+          }
+        }, 2400);
+      }
+    });
+    return;
+  }
+
+  if (!ajaxAction) {
+    return;
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
