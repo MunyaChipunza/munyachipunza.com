@@ -84,56 +84,8 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
   const errorButtonLabel = form.dataset.errorButtonLabel || "Try again";
 
   if (isButtondownSubscribe) {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      if (!form.reportValidity()) {
-        return;
-      }
-
-      const originalLabel = button?.textContent ?? "";
-      if (button) {
-        button.disabled = true;
-        button.textContent = "Sending...";
-      }
-
-      if (note) {
-        note.dataset.state = "";
-        note.textContent = pendingMessage;
-      }
-
-      try {
-        await fetch(form.action, {
-          method: "POST",
-          body: new FormData(form),
-          mode: "no-cors",
-        });
-
-        form.reset();
-        if (note) {
-          note.dataset.state = "success";
-          note.textContent = successMessage;
-        }
-        if (button) {
-          button.textContent = successButtonLabel;
-        }
-      } catch (error) {
-        if (note) {
-          note.dataset.state = "error";
-          note.textContent = errorMessage;
-        }
-        if (button) {
-          button.textContent = errorButtonLabel;
-        }
-      } finally {
-        window.setTimeout(() => {
-          if (button) {
-            button.disabled = false;
-            button.textContent = originalLabel;
-          }
-        }, 2400);
-      }
-    });
+    // Let Buttondown's official embedded form handle validation, subscription,
+    // confirmation, and any visible error state. A no-cors fetch hides failures.
     return;
   }
 
