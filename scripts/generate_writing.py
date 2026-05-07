@@ -876,12 +876,23 @@ def render_homepage_feature_grid(posts: list[dict]) -> str:
         </div>"""
 
 
-def update_homepage_featured_posts(posts: list[dict]) -> None:
+def update_homepage_sections(posts: list[dict]) -> None:
     home_path = ROOT / "index.html"
     home = home_path.read_text(encoding="utf-8")
     home = re.sub(
         r'        <div class="feature-grid">.*?        </div>\r?\n      </section>',
         f"{render_homepage_feature_grid(posts)}\n      </section>",
+        home,
+        count=1,
+        flags=re.S,
+    )
+    home = re.sub(
+        r'      <section class="subscribe-section">.*?      </section>',
+        render_subscribe_section(
+            "Get new reflections by email.",
+            "If the writing helps, subscribe here and I will send the next reflection quietly when it is ready.",
+            "homepage",
+        ),
         home,
         count=1,
         flags=re.S,
@@ -922,7 +933,7 @@ def main() -> None:
 
     write(ROOT / "blog-feed.xml", render_feed(posts))
     write(ROOT / "sitemap.xml", render_sitemap(posts, total_pages))
-    update_homepage_featured_posts(posts)
+    update_homepage_sections(posts)
 
 
 if __name__ == "__main__":
