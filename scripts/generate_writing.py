@@ -20,7 +20,7 @@ POSTS_PER_PAGE = 5
 CONTACT_FORM_ACTION = "https://formsubmit.co/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_FORM_AJAX = "https://formsubmit.co/ajax/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_SUCCESS_URL = f"{SITE_URL}/thanks"
-BUTTONDOWN_USERNAME = "munyaradzi"
+BUTTONDOWN_USERNAME = "munyachipunza"
 BUTTONDOWN_SUBSCRIBE_ACTION = f"https://buttondown.com/api/emails/embed-subscribe/{BUTTONDOWN_USERNAME}"
 
 POST_CONFIG = {
