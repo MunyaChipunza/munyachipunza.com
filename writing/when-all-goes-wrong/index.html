@@ -79,21 +79,13 @@
             <p>If this piece stayed with you, the next one can meet you in your inbox.</p>
           </div>
           <div class="subscribe-form-shell">
-          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="https://formsubmit.co/02774129a6ffd7df5b31b69ff0886e06" data-subscribe-form data-ajax-action="https://formsubmit.co/ajax/02774129a6ffd7df5b31b69ff0886e06" data-pending-message="Saving your subscription..." data-success-message="Thank you. You're on the list." data-success-button-label="Subscribed">
-            <input type="hidden" name="_subject" value="New writing subscriber from munyachipunza.com">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="form_type" value="newsletter_subscription">
-            <input type="hidden" name="status" value="holding until Buttondown account review is approved">
-            <input type="hidden" name="interest" value="New reflections by email">
-            <input type="hidden" name="source" value="article: when-all-goes-wrong">
-            <p class="sr-only">
-              <label>Do not fill this out if you are human <input name="_honey" tabindex="-1" autocomplete="off"></label>
-            </p>
+          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="https://buttondown.com/api/emails/embed-subscribe/munyachipunza" data-subscribe-form>
+            <input type="hidden" value="1" name="embed">
+            <input type="hidden" name="metadata__source" value="article: when-all-goes-wrong">
             <input type="email" name="email" placeholder="Your email address" autocomplete="email" aria-label="Your email address" required>
             <button class="button button-primary" type="submit">Subscribe</button>
           </form>
-          <p class="form-note" data-form-status aria-live="polite">Occasional reflections. No noise.</p>
+          <p class="form-note" data-form-status aria-live="polite">Occasional reflections. Please check your inbox to confirm.</p>
           </div>
         </div>
       </section>
