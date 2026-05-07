@@ -17,6 +17,7 @@ OLD_IP = "185.230.63.171"
 SITE_URL = "https://munyachipunza.com"
 BLOG_APP_ID = "14bcded7-0066-7c35-14d7-466cb3f09103"
 POSTS_PER_PAGE = 5
+ASSET_VERSION = "20260507b"
 CONTACT_FORM_ACTION = "https://formsubmit.co/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_FORM_AJAX = "https://formsubmit.co/ajax/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_SUCCESS_URL = f"{SITE_URL}/thanks"
@@ -625,7 +626,7 @@ def render_archive_page(page_posts: list[dict], page_number: int, total_pages: i
 
 {FOOTER}
 
-    <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/site.js?v={ASSET_VERSION}"></script>
   </body>
 </html>
 """
@@ -751,7 +752,7 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
 
 {FOOTER}
 
-    <script src="/assets/js/site.js"></script>
+    <script src="/assets/js/site.js?v={ASSET_VERSION}"></script>
   </body>
 </html>
 """
