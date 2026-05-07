@@ -20,6 +20,8 @@ POSTS_PER_PAGE = 5
 CONTACT_FORM_ACTION = "https://formsubmit.co/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_FORM_AJAX = "https://formsubmit.co/ajax/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_SUCCESS_URL = f"{SITE_URL}/thanks"
+BUTTONDOWN_USERNAME = "munyaradzi"
+BUTTONDOWN_SUBSCRIBE_ACTION = f"https://buttondown.com/api/emails/embed-subscribe/{BUTTONDOWN_USERNAME}"
 
 POST_CONFIG = {
     "the-weight-of-unspoken-words": {
@@ -451,20 +453,13 @@ def contact_form_fields(subject: str) -> str:
 
 
 def subscribe_form_fields(subject: str, source: str) -> str:
-    return f"""          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="{CONTACT_FORM_ACTION}" data-subscribe-form data-ajax-action="{CONTACT_FORM_AJAX}" data-pending-message="Saving your subscription..." data-success-message="Thank you. You're on the list." data-success-button-label="Subscribed">
-            <input type="hidden" name="_subject" value="{html.escape(subject, quote=True)}">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="form_type" value="subscription">
-            <input type="hidden" name="interest" value="New reflections by email">
-            <input type="hidden" name="source" value="{html.escape(source, quote=True)}">
-            <p class="sr-only">
-              <label>Do not fill this out if you are human <input name="_honey" tabindex="-1" autocomplete="off"></label>
-            </p>
+    return f"""          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="{BUTTONDOWN_SUBSCRIBE_ACTION}" data-subscribe-form>
+            <input type="hidden" value="1" name="embed">
+            <input type="hidden" name="metadata__source" value="{html.escape(source, quote=True)}">
             <input type="email" name="email" placeholder="Your email address" autocomplete="email" aria-label="Your email address" required>
             <button class="button button-primary" type="submit">Subscribe</button>
           </form>
-          <p class="form-note" data-form-status aria-live="polite">Occasional reflections. No noise.</p>"""
+          <p class="form-note" data-form-status aria-live="polite">Occasional reflections. Buttondown will confirm your subscription.</p>"""
 
 
 def render_subscribe_section(title: str, description: str, source: str) -> str:

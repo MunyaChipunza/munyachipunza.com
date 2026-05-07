@@ -67,9 +67,13 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
 });
 
 document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach((form) => {
+  if (!form.dataset.ajaxAction) {
+    return;
+  }
+
   const button = form.querySelector('button[type="submit"]');
   const note = form.parentElement?.querySelector("[data-form-status]");
-  const ajaxAction = form.dataset.ajaxAction || form.getAttribute("action");
+  const ajaxAction = form.dataset.ajaxAction;
   const isSubscribe = form.hasAttribute("data-subscribe-form");
   const pendingMessage =
     form.dataset.pendingMessage || (isSubscribe ? "Saving your subscription..." : "Sending your note...");
