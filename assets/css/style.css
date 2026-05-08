@@ -524,6 +524,20 @@ textarea {
   object-position: center top;
 }
 
+.story-image img.story-image-family {
+  object-position: center 30%;
+}
+
+.story-image.story-image-full {
+  min-height: 0;
+}
+
+.story-image.story-image-full img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+
 .story-copy {
   padding: 2rem 2rem 2.2rem;
 }
