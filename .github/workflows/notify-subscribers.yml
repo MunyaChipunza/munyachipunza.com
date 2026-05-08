@@ -1,0 +1,36 @@
+name: Notify subscribers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - blog-feed.xml
+  workflow_dispatch:
+    inputs:
+      status:
+        description: "Buttondown email status"
+        required: true
+        default: "about_to_send"
+        type: choice
+        options:
+          - about_to_send
+          - draft
+
+jobs:
+  notify:
+    name: Send latest post notification
+    if: github.repository == 'MunyaChipunza/munyachipunza.com'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: buttondown-latest-post
+      cancel-in-progress: false
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+
+      - name: Notify Buttondown subscribers
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          BUTTONDOWN_EMAIL_STATUS: ${{ github.event.inputs.status || 'about_to_send' }}
+        run: python scripts/notify_buttondown.py
