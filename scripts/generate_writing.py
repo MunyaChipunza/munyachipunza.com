@@ -289,6 +289,16 @@ def fetch_posts(access_token: str) -> list[dict]:
     return detailed_posts
 
 
+def decode_html_entities(text: str) -> str:
+    text = str(text)
+    for _ in range(3):
+        decoded = html.unescape(text)
+        if decoded == text:
+            break
+        text = decoded
+    return text
+
+
 def clean_excerpt(text: str) -> str:
     text = normalize_text(text)
     text = " ".join(text.replace("\u00a0", " ").split())
@@ -296,6 +306,7 @@ def clean_excerpt(text: str) -> str:
 
 
 def normalize_text(text: str, *, strip_edges: bool = True) -> str:
+    text = decode_html_entities(text)
     text = text.replace("\u00a0", " ")
     leading_space = text[:1].isspace()
     trailing_space = text[-1:].isspace()
