@@ -15,9 +15,22 @@ ROOT = Path(r"C:\Users\Dell\OneDrive\100. Zee\Munyachipunza.com")
 OLD_HOST = "www.munyachipunza.com"
 OLD_IP = "185.230.63.171"
 SITE_URL = "https://munyachipunza.com"
+SITE_DESCRIPTION = "Personal essays by Munya Chipunza on faith, resilience, fatherhood, grief, leadership, and finding hope in hard seasons."
 BLOG_APP_ID = "14bcded7-0066-7c35-14d7-466cb3f09103"
 POSTS_PER_PAGE = 5
 ASSET_VERSION = "20260507c"
+GOOGLE_ANALYTICS_TAG = """    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4J3RHW9XRZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4J3RHW9XRZ');
+    </script>"""
+ICON_LINKS = """    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">"""
 SUBSCRIBE_MODE = "buttondown"  # Use "holding" while Buttondown account review is pending.
 CONTACT_FORM_ACTION = "https://formsubmit.co/02774129a6ffd7df5b31b69ff0886e06"
 CONTACT_FORM_AJAX = "https://formsubmit.co/ajax/02774129a6ffd7df5b31b69ff0886e06"
@@ -645,7 +658,7 @@ def render_pagination(page_number: int, total_pages: int) -> str:
 
 def render_archive_page(page_posts: list[dict], page_number: int, total_pages: int, total_posts: int) -> str:
     title = page_title(page_number)
-    description = "Editorial reflections on faith, identity, resilience, peace, and what it means to stay human in hard seasons."
+    description = SITE_DESCRIPTION
     hero_line = "Short reflections on faith, identity, grief, peace, and the quiet interior work required to stay human under pressure."
     page_note = f"Page {page_number} of {total_pages} &middot; {total_posts} published reflections."
     canonical = archive_canonical(page_number)
@@ -658,16 +671,21 @@ def render_archive_page(page_posts: list[dict], page_number: int, total_pages: i
     <meta name="description" content="{html.escape(description, quote=True)}">
     <link rel="canonical" href="{canonical}">
     <meta property="og:title" content="{html.escape(title, quote=True)}">
-    <meta property="og:description" content="Reflections on faith, identity, peace, grief, and staying steady.">
+    <meta property="og:description" content="{html.escape(description, quote=True)}">
+    <meta property="og:site_name" content="Munya Chipunza">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{canonical}">
     <meta property="og:image" content="{SITE_URL}/assets/images/munya-home.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{html.escape(title, quote=True)}">
+    <meta name="twitter:description" content="{html.escape(description, quote=True)}">
+    <meta name="twitter:image" content="{SITE_URL}/assets/images/munya-home.jpg">
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/site.webmanifest">
+{ICON_LINKS}
     <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/style.css">
+{GOOGLE_ANALYTICS_TAG}
   </head>
   <body>
 {header("writing", "/about", "About Munya")}
@@ -744,17 +762,22 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
     <link rel="canonical" href="{canonical}">
     <meta property="og:title" content="{html.escape(title, quote=True)}">
     <meta property="og:description" content="{html.escape(description, quote=True)}">
+    <meta property="og:site_name" content="Munya Chipunza">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{canonical}">
     <meta property="og:image" content="{html.escape(post['image_url'], quote=True)}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{html.escape(title, quote=True)}">
+    <meta name="twitter:description" content="{html.escape(description, quote=True)}">
+    <meta name="twitter:image" content="{html.escape(post['image_url'], quote=True)}">
     <meta property="article:published_time" content="{post['published_date']}">
     <meta property="article:modified_time" content="{post['updated_date']}">
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="/site.webmanifest">
+{ICON_LINKS}
     <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/style.css">
+{GOOGLE_ANALYTICS_TAG}
   </head>
   <body>
 {header("writing", "/writing", "All writing")}
