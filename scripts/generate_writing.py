@@ -335,6 +335,16 @@ def normalize_text(text: str, *, strip_edges: bool = True) -> str:
     return text
 
 
+def escape_text(text: str, *, strip_edges: bool = True) -> str:
+    return html.escape(normalize_text(text, strip_edges=strip_edges), quote=False)
+
+
+def escape_attr(text: str, *, strip_edges: bool = True) -> str:
+    # Double-quoted attributes only need double quotes escaped; apostrophes should
+    # remain readable so they never appear on-page as encoded leftovers.
+    return html.escape(normalize_text(text, strip_edges=strip_edges), quote=True).replace("&#x27;", "'")
+
+
 def format_date(value: str) -> str:
     dt = datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
     return f"{dt.day} {dt.strftime('%B %Y')}"
@@ -359,7 +369,7 @@ def text_snippet(text: str, limit: int) -> str:
 def render_inline_node(node: dict) -> str:
     node_type = node.get("type")
     if node_type == "TEXT":
-        rendered = html.escape(normalize_text(node.get("textData", {}).get("text", ""), strip_edges=False))
+        rendered = escape_text(node.get("textData", {}).get("text", ""), strip_edges=False)
         for decoration in node.get("textData", {}).get("decorations", []):
             deco_type = decoration.get("type")
             if deco_type == "ITALIC":
@@ -373,13 +383,13 @@ def render_inline_node(node: dict) -> str:
         link = node.get("linkData", {}).get("link", {})
         url = link.get("url")
         if url:
-            return f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener">{children}</a>'
+            return f'<a href="{escape_attr(url)}" target="_blank" rel="noopener">{children}</a>'
     return children
 
 
 def paragraph_text(post: dict) -> list[str]:
     if post.get("paragraphs"):
-        return [html.escape(normalize_text(paragraph)) for paragraph in post["paragraphs"] if paragraph.strip()]
+        return [escape_text(paragraph) for paragraph in post["paragraphs"] if paragraph.strip()]
 
     paragraphs: list[str] = []
     for node in post["rich_content"]:
@@ -398,7 +408,7 @@ def paragraph_text(post: dict) -> list[str]:
                 merged.append(paragraph)
         return merged
     fallback = clean_excerpt(post["plain_content"])
-    return [html.escape(fallback)] if fallback else []
+    return [escape_text(fallback)] if fallback else []
 
 
 def strip_markup(text: str) -> str:
@@ -536,7 +546,7 @@ FOOTER = """    <footer class="footer">
 
 def contact_form_fields(subject: str) -> str:
     return f"""          <form class="signup-form full" name="contact" method="POST" action="{CONTACT_FORM_ACTION}" data-contact-form data-ajax-action="{CONTACT_FORM_AJAX}" id="contact-form">
-            <input type="hidden" name="_subject" value="{html.escape(subject, quote=True)}">
+            <input type="hidden" name="_subject" value="{escape_attr(subject)}">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_next" value="{CONTACT_SUCCESS_URL}">
@@ -555,7 +565,7 @@ def subscribe_form_fields(subject: str, source: str) -> str:
     if SUBSCRIBE_MODE == "buttondown":
         return f"""          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="{BUTTONDOWN_SUBSCRIBE_ACTION}" data-subscribe-form>
             <input type="hidden" value="1" name="embed">
-            <input type="hidden" name="metadata__source" value="{html.escape(source, quote=True)}">
+            <input type="hidden" name="metadata__source" value="{escape_attr(source)}">
             <input type="email" name="email" placeholder="Your email address" autocomplete="email" aria-label="Your email address" required>
             <button class="button button-primary" type="submit">Subscribe</button>
           </form>
@@ -563,13 +573,13 @@ def subscribe_form_fields(subject: str, source: str) -> str:
 
     if SUBSCRIBE_MODE == "holding":
         return f"""          <form class="signup-form subscribe-form" name="subscribe" method="POST" action="{CONTACT_FORM_ACTION}" data-subscribe-form data-ajax-action="{CONTACT_FORM_AJAX}" data-pending-message="Saving your subscription..." data-success-message="Thank you. You're on the list." data-success-button-label="Subscribed">
-            <input type="hidden" name="_subject" value="{html.escape(subject, quote=True)}">
+            <input type="hidden" name="_subject" value="{escape_attr(subject)}">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="form_type" value="newsletter_subscription">
             <input type="hidden" name="status" value="holding until Buttondown account review is approved">
             <input type="hidden" name="interest" value="New reflections by email">
-            <input type="hidden" name="source" value="{html.escape(source, quote=True)}">
+            <input type="hidden" name="source" value="{escape_attr(source)}">
             <p class="sr-only">
               <label>Do not fill this out if you are human <input name="_honey" tabindex="-1" autocomplete="off"></label>
             </p>
@@ -586,8 +596,8 @@ def render_subscribe_section(title: str, description: str, source: str) -> str:
         <div class="subscribe-panel will-reveal">
           <div class="subscribe-copy">
             <p class="eyebrow">By email</p>
-            <h2>{html.escape(title)}</h2>
-            <p>{html.escape(description)}</p>
+            <h2>{escape_text(title)}</h2>
+            <p>{escape_text(description)}</p>
           </div>
           <div class="subscribe-form-shell">
 {subscribe_form_fields("New writing subscriber from munyachipunza.com", source)}
@@ -612,9 +622,9 @@ def archive_cards(posts: list[dict]) -> str:
         cards.append(
             f"""        <a class="article-card will-reveal" href="/writing/{post["route"]}">
           <div>
-            <p class="article-tag">{html.escape(post["tag"])}</p>
-            <h2 class="article-card-title">{html.escape(post["title"])}</h2>
-            <p>{html.escape(text_snippet(post["excerpt"] or first_paragraph_plain(post), 260))}</p>
+            <p class="article-tag">{escape_text(post["tag"])}</p>
+            <h2 class="article-card-title">{escape_text(post["title"])}</h2>
+            <p>{escape_text(text_snippet(post["excerpt"] or first_paragraph_plain(post), 260))}</p>
           </div>
           <div class="article-meta">
             <div>{format_date(post["published_date"])}</div>
@@ -667,18 +677,18 @@ def render_archive_page(page_posts: list[dict], page_number: int, total_pages: i
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{html.escape(title)}</title>
-    <meta name="description" content="{html.escape(description, quote=True)}">
+    <title>{escape_text(title)}</title>
+    <meta name="description" content="{escape_attr(description)}">
     <link rel="canonical" href="{canonical}">
-    <meta property="og:title" content="{html.escape(title, quote=True)}">
-    <meta property="og:description" content="{html.escape(description, quote=True)}">
+    <meta property="og:title" content="{escape_attr(title)}">
+    <meta property="og:description" content="{escape_attr(description)}">
     <meta property="og:site_name" content="Munya Chipunza">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{canonical}">
     <meta property="og:image" content="{SITE_URL}/assets/images/munya-home.jpg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{html.escape(title, quote=True)}">
-    <meta name="twitter:description" content="{html.escape(description, quote=True)}">
+    <meta name="twitter:title" content="{escape_attr(title)}">
+    <meta name="twitter:description" content="{escape_attr(description)}">
     <meta name="twitter:image" content="{SITE_URL}/assets/images/munya-home.jpg">
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
 {ICON_LINKS}
@@ -724,7 +734,7 @@ def render_article_nav(posts: list[dict], index: int) -> str:
     left = (
         f"""        <a href="/writing/{newer["route"]}">
           <span>Newer reflection</span>
-          <strong>{html.escape(newer["title"])}</strong>
+          <strong>{escape_text(newer["title"])}</strong>
         </a>"""
         if newer
         else "        <div></div>"
@@ -732,7 +742,7 @@ def render_article_nav(posts: list[dict], index: int) -> str:
     right = (
         f"""        <a href="/writing/{older["route"]}">
           <span>Older reflection</span>
-          <strong>{html.escape(older["title"])}</strong>
+          <strong>{escape_text(older["title"])}</strong>
         </a>"""
         if older
         else "        <div></div>"
@@ -757,19 +767,19 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{html.escape(title)}</title>
-    <meta name="description" content="{html.escape(description, quote=True)}">
+    <title>{escape_text(title)}</title>
+    <meta name="description" content="{escape_attr(description)}">
     <link rel="canonical" href="{canonical}">
-    <meta property="og:title" content="{html.escape(title, quote=True)}">
-    <meta property="og:description" content="{html.escape(description, quote=True)}">
+    <meta property="og:title" content="{escape_attr(title)}">
+    <meta property="og:description" content="{escape_attr(description)}">
     <meta property="og:site_name" content="Munya Chipunza">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{canonical}">
-    <meta property="og:image" content="{html.escape(post['image_url'], quote=True)}">
+    <meta property="og:image" content="{escape_attr(post['image_url'])}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{html.escape(title, quote=True)}">
-    <meta name="twitter:description" content="{html.escape(description, quote=True)}">
-    <meta name="twitter:image" content="{html.escape(post['image_url'], quote=True)}">
+    <meta name="twitter:title" content="{escape_attr(title)}">
+    <meta name="twitter:description" content="{escape_attr(description)}">
+    <meta name="twitter:image" content="{escape_attr(post['image_url'])}">
     <meta property="article:published_time" content="{post['published_date']}">
     <meta property="article:modified_time" content="{post['updated_date']}">
     <link rel="alternate" href="{SITE_URL}/blog-feed.xml" title="Munya Chipunza - RSS" type="application/rss+xml">
@@ -785,9 +795,9 @@ def render_article_page(post: dict, posts: list[dict], index: int) -> str:
     <main>
       <section class="article-hero">
         <a class="article-back" href="/writing">&larr; Back to all writing</a>
-        <p class="post-tag">{html.escape(post["tag"])}</p>
-        <h1>{html.escape(post["title"])}</h1>
-        <p class="article-intro">{html.escape(intro)}</p>
+        <p class="post-tag">{escape_text(post["tag"])}</p>
+        <h1>{escape_text(post["title"])}</h1>
+        <p class="article-intro">{escape_text(intro)}</p>
         <div class="post-meta">
           <img src="/assets/images/munya-avatar.webp" alt="Munya Chipunza" width="256" height="256" decoding="async">
           <span>Munya Chipunza</span>
@@ -935,19 +945,19 @@ def render_homepage_feature_grid(posts: list[dict]) -> str:
     for post in side_posts:
         side_cards.append(
             f"""            <a class="mini-card will-reveal" href="/writing/{post["route"]}">
-              <span class="mini-tag">{html.escape(post["tag"])}</span>
-              <h3 class="mini-title">{html.escape(post["title"])}</h3>
-              <p>{html.escape(text_snippet(post.get("summary") or post["excerpt"] or first_paragraph_plain(post), 110))}</p>
+              <span class="mini-tag">{escape_text(post["tag"])}</span>
+              <h3 class="mini-title">{escape_text(post["title"])}</h3>
+              <p>{escape_text(text_snippet(post.get("summary") or post["excerpt"] or first_paragraph_plain(post), 110))}</p>
               <div class="feature-meta">{format_date(post["published_date"])} &bull; {reading_time_label(post["minutes_to_read"])}</div>
             </a>"""
         )
 
     return f"""        <div class="feature-grid">
           <a class="feature-card will-reveal" href="/writing/{lead_post["route"]}">
-            <span class="feature-tag">{html.escape(lead_post["tag"])}</span>
-            <h3 class="feature-title">{html.escape(lead_post["title"])}</h3>
+            <span class="feature-tag">{escape_text(lead_post["tag"])}</span>
+            <h3 class="feature-title">{escape_text(lead_post["title"])}</h3>
             <p class="feature-excerpt">
-              {html.escape(main_excerpt)}
+              {escape_text(main_excerpt)}
             </p>
             <div class="feature-meta">{format_date(lead_post["published_date"])} &bull; {reading_time_label(lead_post["minutes_to_read"])}</div>
           </a>
