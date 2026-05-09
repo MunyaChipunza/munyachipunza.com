@@ -2,6 +2,25 @@ const body = document.body;
 const navToggle = document.querySelector("[data-nav-toggle]");
 const navLinks = document.querySelector("[data-nav-links]");
 
+const trackEvent = (eventName, parameters = {}) => {
+  if (typeof window.gtag !== "function") {
+    return;
+  }
+
+  window.gtag("event", eventName, {
+    page_location: window.location.href,
+    page_path: window.location.pathname,
+    page_title: document.title,
+    ...parameters,
+  });
+};
+
+const analyticsFormSource = (form) =>
+  form.dataset.analyticsSource ||
+  form.querySelector('[name="metadata__source"], [name="source"]')?.value ||
+  form.getAttribute("name") ||
+  "unknown";
+
 if (navToggle && navLinks) {
   navToggle.addEventListener("click", () => {
     const expanded = navToggle.getAttribute("aria-expanded") === "true";
@@ -53,6 +72,10 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
 
     try {
       await navigator.clipboard.writeText(button.dataset.copyLink);
+      trackEvent("share_click", {
+        share_platform: button.dataset.sharePlatform || "copy_link",
+        link_url: button.dataset.copyLink,
+      });
       setStatus("Link copied", "is-copied");
       window.setTimeout(() => {
         setStatus(originalLabel, "");
@@ -63,6 +86,15 @@ document.querySelectorAll("[data-copy-link]").forEach((button) => {
         setStatus(originalLabel, "");
       }, 1600);
     }
+  });
+});
+
+document.querySelectorAll("a[data-share-platform]").forEach((link) => {
+  link.addEventListener("click", () => {
+    trackEvent("share_click", {
+      share_platform: link.dataset.sharePlatform,
+      link_url: link.href,
+    });
   });
 });
 
@@ -86,6 +118,14 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
   if (isButtondownSubscribe) {
     // Let Buttondown's official embedded form handle validation, subscription,
     // confirmation, and any visible error state. A no-cors fetch hides failures.
+    form.addEventListener("submit", () => {
+      if (form.reportValidity()) {
+        trackEvent("newsletter_subscribe_submit", {
+          form_provider: "buttondown",
+          form_source: analyticsFormSource(form),
+        });
+      }
+    });
     return;
   }
 
@@ -99,6 +139,12 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
     if (!form.reportValidity() || !ajaxAction) {
       return;
     }
+
+    const eventPrefix = isSubscribe ? "newsletter_subscribe" : "contact_form";
+    trackEvent(`${eventPrefix}_submit`, {
+      form_provider: "formsubmit",
+      form_source: analyticsFormSource(form),
+    });
 
     const originalLabel = button?.textContent ?? "";
     if (button) {
@@ -126,6 +172,10 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
       }
 
       form.reset();
+      trackEvent(`${eventPrefix}_success`, {
+        form_provider: "formsubmit",
+        form_source: analyticsFormSource(form),
+      });
       if (note) {
         note.dataset.state = "success";
         note.textContent = successMessage;
@@ -134,6 +184,10 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
         button.textContent = successButtonLabel;
       }
     } catch (error) {
+      trackEvent(`${eventPrefix}_error`, {
+        form_provider: "formsubmit",
+        form_source: analyticsFormSource(form),
+      });
       if (note) {
         note.dataset.state = "error";
         note.textContent = errorMessage;
@@ -151,6 +205,59 @@ document.querySelectorAll("[data-contact-form], [data-subscribe-form]").forEach(
     }
   });
 });
+
+const articleBody = document.querySelector(".article-body");
+if (articleBody) {
+  const sentDepths = new Set();
+  const thresholds = [50, 90];
+  let isQueued = false;
+
+  const articleTitle = document.querySelector(".article-hero h1")?.textContent?.trim() || document.title;
+
+  const checkReadDepth = () => {
+    isQueued = false;
+
+    const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
+    const articleHeight = articleBody.offsetHeight;
+    if (!articleHeight) {
+      return;
+    }
+
+    const progress = Math.max(
+      0,
+      Math.min(100, ((window.scrollY + window.innerHeight - articleTop) / articleHeight) * 100)
+    );
+
+    thresholds.forEach((threshold) => {
+      if (progress >= threshold && !sentDepths.has(threshold)) {
+        sentDepths.add(threshold);
+        trackEvent(`article_read_${threshold}`, {
+          article_title: articleTitle,
+          article_path: window.location.pathname,
+          percent_scrolled: threshold,
+        });
+      }
+    });
+
+    if (sentDepths.size === thresholds.length) {
+      window.removeEventListener("scroll", queueReadDepthCheck);
+      window.removeEventListener("resize", queueReadDepthCheck);
+    }
+  };
+
+  function queueReadDepthCheck() {
+    if (isQueued) {
+      return;
+    }
+
+    isQueued = true;
+    window.requestAnimationFrame(checkReadDepth);
+  }
+
+  window.addEventListener("scroll", queueReadDepthCheck, { passive: true });
+  window.addEventListener("resize", queueReadDepthCheck);
+  queueReadDepthCheck();
+}
 
 document.querySelectorAll("[data-year]").forEach((element) => {
   element.textContent = new Date().getFullYear();
